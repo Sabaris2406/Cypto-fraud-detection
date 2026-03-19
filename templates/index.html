@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Fraud Detection System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 0.95em;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 30px;
+            border-radius: 12px;
+            display: none;
+        }
+        
+        .result.licit {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+        
+        .result.illicit {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: white;
+        }
+        
+        .result h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+        
+        .result-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .result-item {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .result-item strong {
+            display: block;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            opacity: 0.9;
+        }
+        
+        .result-item span {
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .info-box p {
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔐 Crypto Fraud Detection</h1>
+            <p>AI-Powered Bitcoin Transaction Analysis</p>
+        </div>
+        
+        <div class="content">
+            <div class="info-box">
+                <h3>How it works</h3>
+                <p>Enter Bitcoin transaction details below. Our XGBoost model analyzes 100+ features to predict if the transaction is legitimate or potentially fraudulent.</p>
+            </div>
+            
+            <form id="predictionForm">
+                <div class="form-group">
+                    <label for="time_step">Time Period (1-49)</label>
+                    <input type="number" id="time_step" name="time_step" min="1" max="49" value="5" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="f2">Transaction Amount (BTC)</label>
+                        <input type="number" id="f2" name="f2" step="0.01" value="1.5" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="f3">Transaction Fee (BTC)</label>
+                        <input type="number" id="f3" name="f3" step="0.001" value="0.015" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="f4">Number of Inputs</label>
+                        <input type="number" id="f4" name="f4" min="1" value="2" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="f5">Number of Outputs</label>
+                        <input type="number" id="f5" name="f5" min="1" value="3" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="f1">Local Feature 1</label>
+                        <input type="number" id="f1" name="f1" step="0.01" value="0.5" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="f6">Local Feature 6</label>
+                        <input type="number" id="f6" name="f6" step="0.01" value="0.125" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="f7">Local Feature 7</label>
+                        <input type="number" id="f7" name="f7" step="0.01" value="0.891" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="f8">Local Feature 8</label>
+                        <input type="number" id="f8" name="f8" step="0.01" value="0.234" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="f9">Local Feature 9</label>
+                        <input type="number" id="f9" name="f9" step="0.01" value="0.456" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="f10">Local Feature 10</label>
+                        <input type="number" id="f10" name="f10" step="0.01" value="0.789" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn">Analyze Transaction</button>
+            </form>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 15px; color: #666;">Analyzing transaction...</p>
+            </div>
+            
+            <div class="result" id="result">
+                <h2 id="resultTitle"></h2>
+                <div class="result-details">
+                    <div class="result-item">
+                        <strong>Fraud Probability</strong>
+                        <span id="probability"></span>
+                    </div>
+                    <div class="result-item">
+                        <strong>Risk Level</strong>
+                        <span id="riskLevel"></span>
+                    </div>
+                    <div class="result-item">
+                        <strong>Classification</strong>
+                        <span id="classification"></span>
+                    </div>
+                    <div class="result-item">
+                        <strong>Processing Time</strong>
+                        <span id="processingTime"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = parseFloat(value);
+            });
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                
+                if (result.status === 'success') {
+                    const res = result.result;
+                    const resultDiv = document.getElementById('result');
+                    
+                    // Set class based on prediction
+                    resultDiv.className = 'result ' + res.predicted_label;
+                    resultDiv.style.display = 'block';
+                    
+                    // Update content
+                    document.getElementById('resultTitle').textContent = 
+                        res.predicted_label === 'illicit' ? '⚠️ Fraudulent Transaction Detected' : '✅ Legitimate Transaction';
+                    document.getElementById('probability').textContent = 
+                        (res.fraud_probability * 100).toFixed(2) + '%';
+                    document.getElementById('riskLevel').textContent = 
+                        res.risk_level.toUpperCase();
+                    document.getElementById('classification').textContent = 
+                        res.predicted_label.toUpperCase();
+                    document.getElementById('processingTime').textContent = 
+                        res.processing_time_ms.toFixed(2) + ' ms';
+                } else {
+                    alert('Error: ' + (result.error || 'Unknown error'));
+                }
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                alert('Error connecting to API: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
