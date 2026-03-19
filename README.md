@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Cryptocurrency Fraud Detection System
 
 AI-powered Bitcoin transaction fraud detection using XGBoost.
@@ -29,3 +30,6 @@ python app.py
 - Author: Krishna Kumar S (23CTU033)
 - Guide: Mrs. R. Poongodi
 - Dataset: Elliptic Bitcoin Dataset
+=======
+# Cypto-fraud-detection
+>>>>>>> 70fb1f4363dd3eea30240dccd8cccc199e425355
